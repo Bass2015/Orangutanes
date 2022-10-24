@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import datetime as dt
 
-xls = pd.ExcelFile(r'../Registro orangutanes Barcelona.xlsx')
+xls = pd.ExcelFile(r'./Registro orangutanes Barcelona.xlsx')
 df_raw = pd.read_excel(xls,'Grupo')
 
 DATE = 'date'
@@ -160,7 +160,7 @@ class GraphDF(DataManager):
     
     def create_graph(self, period):
         df = self.df[self.df[PERIOD] == period]
-        graph = df.groupby([SUBJECT])[RECEPTOR] \
+        graph = df.groupby(SUBJECT)[RECEPTOR] \
                   .value_counts() \
                   .unstack(RECEPTOR) \
                   .fillna(0) \
@@ -168,5 +168,6 @@ class GraphDF(DataManager):
         return graph
 
 cleandf = CleanDF(df_raw)
-g = GraphDF(cleandf.process_df())
-d = g.process_df()
+mldf = MLDF(cleandf.process_df())
+mldf.process_df()
+mldf.save_df('machine_learning.csv')
