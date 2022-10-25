@@ -43,12 +43,6 @@
              
 
              
-             #config {
-                 float: left;
-                 width: 400px;
-                 height: 600px;
-             }
-             
 
              
         </style>
@@ -63,8 +57,6 @@
         </div>
 
         
-        
-            <div id="config"></div>
         
 
         <script type="text/javascript">
@@ -97,7 +89,7 @@
 
                   // parsing and collecting nodes and edges from the python
                   nodes = new vis.DataSet([{"color": "#97c2fc", "id": "Hadia", "label": "Hadia", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Jawie", "label": "Jawie", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Karl", "label": "Karl", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Locky", "label": "Locky", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Popo", "label": "Popo", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Storma", "label": "Storma", "shape": "dot", "size": 10}]);
-                  edges = new vis.DataSet([{"from": "Hadia", "to": "Jawie", "width": 85}, {"from": "Hadia", "to": "Karl", "width": 1}, {"from": "Hadia", "to": "Locky", "width": 20}, {"from": "Hadia", "to": "Popo", "width": 46}, {"from": "Hadia", "to": "Storma", "width": 65}, {"from": "Jawie", "to": "Jawie", "width": 1}, {"from": "Jawie", "to": "Karl", "width": 1}, {"from": "Jawie", "to": "Locky", "width": 2}, {"from": "Jawie", "to": "Popo", "width": 11}, {"from": "Jawie", "to": "Storma", "width": 53}, {"from": "Locky", "to": "Popo", "width": 87}, {"from": "Locky", "to": "Storma", "width": 63}, {"from": "Popo", "to": "Storma", "width": 61}]);
+                  edges = new vis.DataSet([{"from": "Hadia", "to": "Jawie", "width": 5.459770114942529}, {"from": "Hadia", "to": "Karl", "width": 10.0}, {"from": "Hadia", "to": "Locky", "width": 1.343283582089552}, {"from": "Hadia", "to": "Popo", "width": 2.7027027027027026}, {"from": "Hadia", "to": "Storma", "width": 1.624365482233502}, {"from": "Jawie", "to": "Locky", "width": 0.44776119402985004}, {"from": "Jawie", "to": "Popo", "width": 1.576576576576576}, {"from": "Jawie", "to": "Storma", "width": 2.741116751269035}, {"from": "Karl", "to": "Storma", "width": 0.15228426395939}, {"from": "Locky", "to": "Popo", "width": 3.783783783783784}, {"from": "Locky", "to": "Storma", "width": 2.842639593908629}, {"from": "Popo", "to": "Storma", "width": 2.6395939086294415}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -110,7 +102,7 @@
 
                   var options = {
     "configure": {
-        "enabled": true
+        "enabled": false
     },
     "edges": {
         "color": {
@@ -141,10 +133,6 @@
                   
 
 
-                  
-                  // if this network requires displaying the configure window,
-                  // put it in its div
-                  options.configure["container"] = document.getElementById("config");
                   
 
                   network = new vis.Network(container, data, options);
