@@ -167,6 +167,9 @@ class GraphDF(DataManager):
                   .astype(int)
         return graph
 
+
+xls = pd.ExcelFile(r'./Registro orangutanes Barcelona.xlsx')
+df_raw = pd.read_excel(xls,'Grupo')
 cleandf = CleanDF(df_raw)
 mldf = MLDF(cleandf.process_df())
 mldf.process_df()

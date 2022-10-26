@@ -8,3 +8,5 @@
 - Machine Learning
 ## Data cleaning
 - explicar proceso
+- Mostrar clases
+## Machine learning
