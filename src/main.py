@@ -15,7 +15,7 @@ wr = st.write
 
 # ---------------Titulo-----------------------
 # ## de qué va el estudio
-st.write("# 🦧 Análisis de la terapia de juego en orangutanes")
+"# 🦧 Análisis de la terapia de juego en orangutanes"
 st.write('## El estudio')
 st. write('''Hipótesis: *El juego con el cuidador disminuye 
             las coductas agonísticas y mejora las conductas

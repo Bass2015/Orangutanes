@@ -1,10 +1,27 @@
 # Orangutanes
+
+Macro-Conductas finales:
+
+
+
+["bra","cam","corr","tre"]),'macro_bhv'] = 'moving'
+["sen","quad","tum"]),'macro_bhv'] = 'resting'
+["alim","forr"]),'macro_bhv'] = 'feeding'
+["groo","hur","ras","chup"]),'macro_bhv'] = 'grooming'
+["jsol","jexp","jacrob"]),'macro_bhv'] = 'playing'
+["ins"]),'macro_bhv'] = 'exploring'
+["sex"]),'macro_bhv'] = 'sex'
+["con","marc","huir"]),'macro_bhv'] = 'agonistic'
+["lucha","perj"]),'macro_bhv'] = 'social-playing'
+["pub"]),'macro_bhv'] = 'interacting with public'
+["jun","aprox","trans","toca","solj","alogroo"]),'macro_bhv'] = 'social'
+
 Positivas:
 - Conductas lúdicas
 - Lúdico-sociales
 - Afiliativas
 
-Neutras:
+Inidividual:
 - Reposo 
 - Locomoción
 - Alimentación
