@@ -1,247 +1,98 @@
 import streamlit as st
-import pandas as pd
-import networkx as nx 
-import plotly.express as px
-import json
-import constants
-import numpy as np
-from data_manager import CleanDF
-from pyvis.network import Network
 import streamlit.components.v1 as components
-from PIL import Image
-
+import pandas as pd
+# # import networkx as nx 
+import plotly.express as px
+# # import json
+# # import constants
+import numpy as np
+# # from data_manager import CleanDF
+# # from pyvis.network import Network
+# from PIL import Image
 
 wr = st.write
+SUBJECTS =['Karl', 'Hadia', 'Popo', 'Locky', 'Storma', 'Jawie']
 
-# ---------------Titulo-----------------------
-# ## de qué va el estudio
-"# 🦧 Análisis de la terapia de juego en orangutanes"
-st.write('## El estudio')
-st. write('''Hipótesis: *El juego con el cuidador disminuye 
-            las coductas agonísticas y mejora las conductas
-            afiliativas en orangutanes*''')
-gorilas = Image.open('./img/gorilas.png')
-st.image(gorilas)
-#        Meter dibujito
 
-# -------------- Planificación --------------------
-st.write('## Planificación')
-xls = pd.ExcelFile(r'./Registro orangutanes Barcelona.xlsx')
-df_raw = pd.read_excel(xls,'Grupo', dtype=str)
-st.write(df_raw)
+def layout():
+    with st.sidebar:
+        subject = st.radio('Select the subject to visualize', SUBJECTS)
+    dashboard = SubjectDashboard(subject)
+    dashboard.render()
 
-st.graphviz_chart('''
-    digraph {
-        Raw_data -> Visualización
-        Raw_data -> Grafo_social
-        Raw_data -> Machine_learning
-    }''')
+def calculate_rel_frequencies(x, period):
+    sum = x.groupby('period')['freq'].sum()
+    x['relative_freq'] += (x['period']==period).astype(int)*x['freq'] / sum[period]
 
-#----------------- Data cleaning -----------------------
-wr('## Data Cleaning')
-classes = Image.open('./img/classes.png')
-st.image(classes)
-
-tab1, tab2, tab3, tab4 = st.tabs(['🧼 Clean', '👀 Visualization', '📈 Graphs', '🧠 Machine Learning'])
-cleandf = CleanDF(df_raw)
-df = cleandf.process_df()
-mldf  = pd.read_csv('./machine_learning.csv')
-macro_df  = pd.read_csv('./macro_df.csv').drop('period.1', axis=1)
-graph_df = pd.read_csv('./juego_graph.csv')
-tab1.write(df)
-tab2.write(macro_df)
-tab3.write(graph_df)
-tab4.write(mldf)
-# --------------- Visualización ---------------------
-wr('## Visualización')
-df_fq = pd.read_csv('./df_fq.csv').set_index('Unnamed: 0', drop=True)
-# df_fq.iloc[:,1:] = df_fq.iloc[:,1:].astype(float).divide(df_fq.sum(), axis=1)
-df_fq = df_fq.divide(df_fq.sum(), axis=1)
-fig_fre = px.histogram(macro_df, x="period", y=[df_fq['fq_relativa_ago'],
-                                               df_fq['fq_relativa_afi']],
-                       barmode='group',color_discrete_sequence=px.colors.qualitative.Pastel)
-fig_fre.update_layout(
-    title="Relative Frecuency",
-    xaxis_title="period",
-    yaxis_title="relative frequency",
-    legend_title="behaviors")
+class SubjectDashboard:
+    def __init__(self, subject):
+        self.subject = subject
+        self.df = pd.read_csv('./data/clean_df.csv', index_col=[0])\
+                        .groupby(['date', 'reg','subject','macro_bhv', 'period'])\
+                        ['duration'].sum().reset_index()
     
-fig_fre.for_each_trace(lambda t: t.update(name = {"wide_variable_0": "agonisticas", "wide_variable_1": "afiliativas"}[t.name]))
-df_fq
-st.plotly_chart(fig_fre)
+    def render(self):
+        with st.container():
+            col1, col2 = st.columns([3, 8])
+            with col1:
+                self.info()
+            with col2:
+                self.boxplot()
+        with st.container():
+            col3, col4 = st.columns(2)
+            with col3:
+                self.pie_chart()
+            with col4: 
+                self.stacked_bars()
 
-macro_df
-# macro_df = macro_df.divide(macro_df.sum(), axis=1)
-fig = px.histogram(macro_df, x="period", y=['duracion_agonisticas', 'duracion_publico', 'duracion_afiliativas',
-       'duracion_ludico_social', 'duracion_sexual', 'duracion_ludicas'], barmode='group',color_discrete_sequence=px.colors.qualitative.Pastel,category_orders={"period": ["Prejuego","Juego","Postjuego"]})
-fig.update_layout(
-    title="Duration",
-    xaxis_title="period",
-    yaxis_title="% duration",
-    legend_title="behaviors")
-fig
-# -------------- Grafos -------------------
+    
+    def info(self):
+        st.markdown(f'# {self.subject}')
+        wr('''Lorem ipsum dolor si amet, consectetur 
+        adipiscing incidunt ut labore et dolore magna aliquam
+         erat nostrud exercitation ullamcorper suscipit laboris
+          nis duis autem vel eum irure dolor in reprehenderit i,
+           dolore eu fugiat nulla pariatur. At vero eos et accusa
+            praesant luptatum delenit aigue duos dolor et mole
+             provident, simil tempor sunt in culpa qui officia de
+              fuga. Et harumd dereud facilis est er expedit disti 
+              eligend optio congue nihil impedit doming id quod 
+              assumenda est, omnis dolor repellend.''')
 
-wr('## Social Graphs')
-tab1, tab2, tab3 = st.tabs(['Prejuego', 'Juego', 'Postjuego'])
+    def boxplot(self):
+        if not isinstance(self.subject, list):
+            subjects=[self.subject]
+        df = self.df[(self.df['subject'].isin(subjects))&(self.df['macro_bhv']=='Individual')]
+        fig = px.box(df, x='period', y='duration', color='period', width=500, title='Individual')
+        st.plotly_chart(fig, use_container_width=True)
+    
+    def stacked_bars(self):
+        freq = pd.read_csv('./data/freqs_df.csv', index_col=[0])
+        freq = freq[(freq['subject']==self.subject)]\
+                    .groupby(['period','macro_bhv'])['freq'] \
+                    .sum() \
+                    .reset_index()
+        freq['relative_freq'] = 0
+        calculate_rel_frequencies(freq,'pregame')
+        calculate_rel_frequencies(freq,'game')
+        calculate_rel_frequencies(freq,'postgame')
+        st.plotly_chart(px.bar(freq,
+                               x='period',
+                               y='relative_freq',
+                               color='macro_bhv', 
+                               width=400),
+                        use_container_width=True)
 
-pre_graph = pd.read_csv('./prejuego_graph.csv')
-pre_graph.set_index('subject', inplace=True)
-pre_graph *= 10
-G = nx.from_pandas_adjacency(pre_graph)
-G.name = "Grafo social, periodo prejuego"
-
-net = Network(notebook=True)
-net.from_nx(G)
-net.save_graph('prejuego.html')
-HtmlFile = open(f'prejuego.html','r',encoding='utf-8')
-
-with tab1: 
-    components.html(HtmlFile.read(), height=800, width=800)
-
-juego_graph = pd.read_csv('./juego_graph.csv')
-juego_graph.set_index('subject', inplace=True)
-juego_graph *= 10
-G = nx.from_pandas_adjacency(juego_graph)
-G.name = "Grafo social, periodo prejuego"
-
-net = Network(notebook=True)
-net.from_nx(G)
-net.save_graph('juego.html')
-HtmlFile = open(f'juego.html','r',encoding='utf-8')
-
-with tab2: 
-    components.html(HtmlFile.read(), height=800, width=800)
-
-post_juego_graph = pd.read_csv('./postjuego_graph.csv')
-post_juego_graph.set_index('subject', inplace=True)
-post_juego_graph *= 10
-G = nx.from_pandas_adjacency(post_juego_graph)
-G.name = "Grafo social, periodo prejuego"
-
-net = Network(notebook=True)
-net.from_nx(G)
-net.save_graph('post_juego.html')
-HtmlFile = open(f'post_juego.html','r',encoding='utf-8')
-
-with tab3: 
-    components.html(HtmlFile.read(), height=800, width=800)
-
-# -------------- Machine learning -------------------
-
-wr('## Machine Learning')
-wr('### Periods')
-tab1, tab2, tab3, tab4 = st.tabs(['Decission Trees', 'Random Forest', 'SVM', 'Neural Network'])
-
-with open('results.json', 'r') as f:
-    results = json.load(f)
-
-# DECISSION--------
-score = results['periods'][constants.DT][constants.SCORE]
-cm = results['periods'][constants.DT][constants.CM]
-cm = cm / np.asarray(cm).astype(np.float).sum(axis=1)
-
-tab1.write(f'__Score__: {score}')
-tab1.plotly_chart(px.imshow(cm,
-          title='Decission tree model confusion matrix',
-          labels=dict(x='Predicted', y='Truth', color='Percentage'),
-          x=['Prejuego', 'Juego', 'Postjuego'],
-          y=['Prejuego', 'Juego', 'Postjuego']))
-
-# RANDOM FOREST--------
-score = results['periods'][constants.RF][constants.SCORE]
-cm = results['periods'][constants.RF][constants.CM]
-cm = cm / np.asarray(cm).astype(np.float).sum(axis=1)
+    def pie_chart(self):
+        mask = (self.df['subject']==self.subject)&(self.df['period']=='postgame')
+        behavior_total_durations = self.df[mask] \
+            .groupby('macro_bhv')['duration'] \
+            .sum() \
+            .reset_index()
+        st.plotly_chart(px.pie(behavior_total_durations,
+                               values='duration', 
+                               names='macro_bhv'),
+                        use_container_width=False)
 
 
-tab2.write(f'__Score__: {score}')
-tab2.plotly_chart(px.imshow(cm,
-          title='Decission tree model confusion matrix',
-          labels=dict(x='Predicted', y='Truth', color='Percentage'),
-          x=['Prejuego', 'Juego', 'Postjuego'],
-          y=['Prejuego', 'Juego', 'Postjuego']))
-
-# SVM -----------
-score = results['periods'][constants.SVM][constants.SCORE]
-cm = results['periods'][constants.SVM][constants.CM]
-cm = cm / np.asarray(cm).astype(np.float).sum(axis=1)
-
-
-tab3.write(f'__Score__: {score}')
-tab3.plotly_chart(px.imshow(cm,
-          title='Decission tree model confusion matrix',
-          labels=dict(x='Predicted', y='Truth', color='Percentage'),
-          x=['Prejuego', 'Juego', 'Postjuego'],
-          y=['Prejuego', 'Juego', 'Postjuego']))
-
-# NEURAL ------
-score = results['periods'][constants.NN][constants.SCORE]
-cm = results['periods'][constants.NN][constants.CM]
-cm = cm / np.asarray(cm).astype(np.float).sum(axis=1)
-
-tab4.write(f'__Score__: {score}')
-tab4.plotly_chart(px.imshow(cm,
-          title='Decission tree model confusion matrix',
-          labels=dict(x='Predicted', y='Truth', color='Percentage'),
-          x=['Prejuego', 'Juego', 'Postjuego'],
-          y=['Prejuego', 'Juego', 'Postjuego']))
-
-# SUBJECTS  ------------
-
-wr('### Subjects')
-tab1, tab2, tab3, tab4 = st.tabs(['Decission Trees', 'Random Forest', 'SVM', 'Neural Network'])
-
-with open('results.json', 'r') as f:
-    results = json.load(f)
-
-# DECISSION--------
-score = results['subjects'][constants.DT][constants.SCORE]
-cm = results['subjects'][constants.DT][constants.CM]
-cm = cm / np.asarray(cm).astype(np.float).sum(axis=1)
-
-tab1.write(f'__Score__: {score}')
-tab1.plotly_chart(px.imshow(cm,
-          title='Decission tree model confusion matrix',
-          labels=dict(x='Predicted', y='Truth', color='Percentage'),
-          x=['Karl', 'Locky', 'Jawie', 'Storma', 'Popo', 'Hadia'],
-          y=['Karl', 'Locky', 'Jawie', 'Storma', 'Popo', 'Hadia']))
-
-# RANDOM FOREST--------
-score = results['subjects'][constants.RF][constants.SCORE]
-cm = results['subjects'][constants.RF][constants.CM]
-cm = cm / np.asarray(cm).astype(np.float).sum(axis=1)
-
-
-tab2.write(f'__Score__: {score}')
-tab2.plotly_chart(px.imshow(cm,
-          title='Decission tree model confusion matrix',
-          labels=dict(x='Predicted', y='Truth', color='Percentage'),
-          x=['Karl', 'Locky', 'Jawie', 'Storma', 'Popo', 'Hadia'],
-          y=['Karl', 'Locky', 'Jawie', 'Storma', 'Popo', 'Hadia']))
-
-# SVM -----------
-score = results['subjects'][constants.SVM][constants.SCORE]
-cm = results['subjects'][constants.SVM][constants.CM]
-cm = cm / np.asarray(cm).astype(np.float).sum(axis=1)
-
-
-tab3.write(f'__Score__: {score}')
-tab3.plotly_chart(px.imshow(cm,
-          title='Decission tree model confusion matrix',
-          labels=dict(x='Predicted', y='Truth', color='Percentage'),
-          x=['Karl', 'Locky', 'Jawie', 'Storma', 'Popo', 'Hadia'],
-          y=['Karl', 'Locky', 'Jawie', 'Storma', 'Popo', 'Hadia']))
-
-# NEURAL ------
-score = results['subjects'][constants.NN][constants.SCORE]
-cm = results['subjects'][constants.NN][constants.CM]
-cm = cm / np.asarray(cm).astype(np.float).sum(axis=1)
-
-tab4.write(f'__Score__: {score}')
-tab4.plotly_chart(px.imshow(cm,
-          title='Decission tree model confusion matrix',
-          labels=dict(x='Predicted', y='Truth', color='Percentage'),
-          x=['Karl', 'Locky', 'Jawie', 'Storma', 'Popo', 'Hadia'],
-          y=['Karl', 'Locky', 'Jawie', 'Storma', 'Popo', 'Hadia']))
-
-# ------------
+layout()
