@@ -1,3 +1,7 @@
+
+# Classes used to clean and process the original excel file
+# Authors: Alba Avilés, Sebastián Dolgonos
+
 from lib2to3.pgen2.pgen import DFAState
 import pandas as pd
 import numpy as np
