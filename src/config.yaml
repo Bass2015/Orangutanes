@@ -1,9 +1,9 @@
 
 DATASET:
   subjects:
-    - Karl
-    - Hadia
     - Popo
+    - Hadia
+    - Karl
     - Locky
     - Storma
     - Jawie
@@ -42,3 +42,41 @@ COLORS:
     Public: "#D67C7A"
     Individual: "#86BDB2"
     Sex: "#538A6B"
+  periods:
+    pregame: "#C5D845"
+    game: "#6CB44A"
+    postgame: "#1D9237"
+
+DESC:
+  Karl: "Dominant male. Father of Popo and Hadia. 
+           Sexually compulsive (when he takes a female 
+           he retains her for a long time). He is very 
+           intelligent but not very active."
+  Popo: "Locky and Karl son. He is becoming an adult 
+           and begins to have sexual behaviors with the 
+           whole group, as simulated behaviors). He is 
+           very active, usually in a positive way. He 
+           does not trust his father because he is 
+           aggressive with him."
+  Hadia: "Daughter of Jawie and Karl. When she doesn't get what 
+            she wants (food, play, enrichment...) she throws 
+            tantrums as if she was a human baby (she screams 
+            and moves compulsively). Apart from that, she is
+            calm and has a very good relationship with her grandmother, Locky."
+  Jawie: "Daughter of Locky and Karl. She is Locky's first 
+            daughter and a good but unloving mother. She has 
+            a somewhat rough relationship with humans 
+            (with almost everyone, except for some keepers)."
+  Storma: "She is the only one that comes from another zoo. 
+             She has been very distrustful and it has been difficult
+             for her to adapt, although from the first moment she 
+             has had a good relationship with everyone. She is very 
+             impulsive with food and has Locky as a foster mother."
+  Locky: "Old female. Mother of Jawie and Popo. 
+            She is very pacifying and protective 
+            with her son Popo. She has a respectful relationship
+            with Jawie but since she became a mother they are a
+            little bit more distant emotionally. She's been like an
+            adoptive mother for Storma. Everyone else has her as a 
+            safety reference."
+
