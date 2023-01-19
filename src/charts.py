@@ -1,5 +1,6 @@
 import yaml
 import plotly.express as px
+import plotly.graph_objects as go
 import pandas as pd
 
 with open('./src/config.yaml', 'r') as f:
@@ -58,7 +59,8 @@ class PieChart(Chart):
                      names='macro_bhv', 
                      color='macro_bhv', 
                      color_discrete_map=CONFIG['COLORS']['behaviors'])
-        self.fig.update_traces(textinfo='none')
+        self.fig.update_traces(hoverinfo='label+percent',
+                textinfo='none')
         self.update_layout(title=self.title)
         return self.fig
     
