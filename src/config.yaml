@@ -27,6 +27,10 @@ DATASET:
     - Sex
     - Agonistic
     - Public
+  periods:
+    - pregame
+    - game
+    - postgame
 
 COLORS:
   layout:

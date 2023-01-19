@@ -47,9 +47,10 @@ class SubjectDashboard:
         st.plotly_chart(chart.figure(), use_container_width=True)
 
     def pie_chart(self):
-        chart = PieChart(self.subject,
+        period = st.selectbox('Period',CONFIG['DATASET']['periods'])
+        chart = PieChart(period,self.subject,
                         title="Time spent on each behavior, by period",
-                        df=self.df,)
+                        df=self.df)
         st.plotly_chart(chart.figure(),
                         use_container_width=True)
 

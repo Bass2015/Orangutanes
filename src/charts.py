@@ -43,14 +43,15 @@ class Chart:
                            })
 
 class PieChart(Chart):
-    def __init__(self, subject, title, df=None):
+    def __init__(self, period, subject, title, df=None):
+        self.period=period
         Chart.__init__(self, subject, title, df)
 
-    def figure(self, period='pregame'):
-        mask = (self.df['subject']==self.subject)&(self.df['period']==period)
+    def figure(self):
+        mask = (self.df['subject']==self.subject)&(self.df['period']==self.period)
         behavior_total_durations = self.df[mask] \
             .groupby('macro_bhv')['duration'] \
-            .sum() \
+            .mean() \
             .reset_index()
         self.fig = px.pie(behavior_total_durations,
                      values='duration', 
