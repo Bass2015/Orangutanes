@@ -7,6 +7,7 @@ from screens import SubjectDashboard
 
 with open('./src/config.yaml', 'r') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
+
 st.set_page_config(layout='wide')
 wr = st.write
 
@@ -16,4 +17,5 @@ def layout():
     dashboard = SubjectDashboard(subject)
     dashboard.render()
 
-layout()
+if __name__ == '__main__':
+    layout()
