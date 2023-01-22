@@ -113,7 +113,6 @@ class Boxplot(Chart):
                           x='period',
                           y='duration',
                           color='macro_bhv', 
-                          title='Individual',
                           color_discrete_map=CONFIG['COLORS']['behaviors'])
         self.update_layout(self.title, lgd_title=None)
         self.fig.update_layout({'showlegend': False, 
