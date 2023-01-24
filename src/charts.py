@@ -16,6 +16,11 @@ class Chart:
     def figure(self):
         return self.fig
 
+    def sort_periods(self):
+        periods = ['pregame', 'game', 'postgame']
+        self.df['period'] = pd.Categorical(self.df['period'], categories=periods)
+        self.df.sort_values(by='period', inplace=True)
+
     def update_layout(self, title, lgd_title=None):
         self.fig.update_layout({'title': {
                                 'text': title,
@@ -76,6 +81,7 @@ class StackedBars(Chart):
                      y='relative_freq',
                      color='macro_bhv', 
                      width=400, 
+                     category_orders={'period':['pregame', 'game', 'postgame']},
                      color_discrete_map=CONFIG['COLORS']['behaviors'])
         self.update_layout(self.title, lgd_title='Behavior')
         self.fig.update_traces(marker_line_color='rgba(0,0,0,0)')
@@ -89,9 +95,8 @@ class StackedBars(Chart):
         self.df['relative_freq'] = 0
         for period in self.df['period'].unique():
             self.calculate_rel_frequencies(period)
-        periods = ['pregame', 'game', 'postgame']
-        self.df['period'] = pd.Categorical(self.df['period'], categories=periods)
-        self.df.sort_values(by='period', inplace=True)
+        self.sort_periods()
+        
 
     def calculate_rel_frequencies(self, period):
         sum = self.df.groupby('period')['freq'].sum()
@@ -103,18 +108,27 @@ class Boxplot(Chart):
     def __init__(self, subject, title, behavior, df=None):
         self.behavior = behavior
         Chart.__init__(self, subject, title, df)
+        self.unstack_behaviors()
 
     def figure(self):
         if not isinstance(self.subject, list):
             subjects=[self.subject]
-        mask = (self.df['subject'].isin(subjects))&(self.df['macro_bhv']==self.behavior)
+        mask = (self.df['subject'].isin(subjects))
         df = self.df[mask]
         self.fig = px.box(df,
                           x='period',
-                          y='duration',
-                          color='macro_bhv', 
+                          y=self.behavior,
+                          color=self.behavior, 
+                          category_orders={'period':['pregame', 'game', 'postgame']},
                           color_discrete_map=CONFIG['COLORS']['behaviors'])
         self.update_layout(self.title, lgd_title=None)
         self.fig.update_layout({'showlegend': False, 
                                 'yaxis': {'title': 'seconds'}})
         return self.fig
+    
+    def unstack_behaviors(self):
+        self.df = self.df.groupby(['period', 'date','subject', 'reg','macro_bhv'])\
+                         ['duration'] \
+                         .sum() \
+                         .unstack(level='macro_bhv', fill_value=0) \
+                         .reset_index()

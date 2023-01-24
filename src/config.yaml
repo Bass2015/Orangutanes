@@ -24,7 +24,7 @@ DATASET:
     - Social
     - Social-Ludic
     - Ludic
-    - Sex
+    - Sexual
     - Agonistic
     - Public
   periods:
@@ -45,7 +45,7 @@ COLORS:
     Agonistic: "#9B5454"
     Public: "#D67C7A"
     Individual: "#86BDB2"
-    Sex: "#538A6B"
+    Sexual: "#538A6B"
   periods:
     pregame: "#C5D845"
     game: "#6CB44A"
