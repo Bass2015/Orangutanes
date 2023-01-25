@@ -46,6 +46,14 @@ COLORS:
     Public: "#D67C7A"
     Individual: "#86BDB2"
     Sexual: "#538A6B"
+  bhv_highlight:
+    Social: "#FFF7CF"
+    Ludic: "#CCFFED"
+    Social-Ludic: "#B8EA91"
+    Agonistic: "#D2A78E"
+    Public: "#F6CAE0"
+    Individual: "#B7D6FB"
+    Sexual: "#ABD7BA"
   periods:
     pregame: "#C5D845"
     game: "#6CB44A"

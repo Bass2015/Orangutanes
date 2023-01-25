@@ -134,13 +134,50 @@ class Boxplot(Chart):
                                 'yaxis': {'title': 'seconds'}})
         return self.fig
     
-    
-
 class MeanBars(Chart):
-    def __init__(self, subject, title, behavior, df=None):
+    def __init__(self, subject, title, behavior, error_bar, scatter, df=None):
         self.behavior = behavior
+        self.error_bar = error_bar
+        self.scatter = scatter
         super().__init__(subject, title, df)
         self.unstack_behaviors()
     
     def figure(self):
-        pass
+        self.df = self.df[self.df['subject'].isin(self.subject)]
+        statistics = self.behavior_means_stds()
+        self.fig = px.bar(x=CONFIG['DATASET']['periods'],
+                y=statistics['means'])
+        self.beautify(statistics)
+        return self.fig
+
+    def beautify(self, statistics):
+        self.update_layout(self.title, lgd_title=None)
+        self.fig.update_traces(marker_color=CONFIG['COLORS']['behaviors'][self.behavior],
+                               marker_line_color='rgba(0,0,0,0)')
+        self.plot_points_and_error(statistics)
+
+    def plot_points_and_error(self, statistics):
+        color = CONFIG['COLORS']['bhv_highlight'][self.behavior]
+        if self.error_bar:
+            self.fig.update_traces(error_y=dict(type='data',
+                              array=statistics['stds'], 
+                              color=color))
+        if self.scatter:                
+            self.fig.add_trace(go.Scatter(
+                            x=self.df.period, 
+                            y=self.df[self.behavior], 
+                            mode='markers',
+                            marker={'color':color})
+                         )
+        
+    def behavior_means_stds(self):
+        return pd.DataFrame({
+            'means': [self.get_stat('mean', period ) 
+                      for period in self.df['period'].unique()],
+            'stds': [self.get_stat('std', period ) 
+                     for period in self.df['period'].unique()]})
+
+    def get_stat(self, stat, period):
+        return self.df.query(f"period=='{period}'") \
+                .describe() \
+                .loc[stat, self.behavior]

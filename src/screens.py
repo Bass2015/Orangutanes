@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 import yaml
-from charts import Boxplot, PieChart, StackedBars
+from charts import Boxplot, PieChart, StackedBars, MeanBars
 
 wr = st.write
 with open('./src/config.yaml', 'r') as f:
@@ -21,7 +21,7 @@ class SubjectDashboard:
             with col1:
                 self.info()
             with col2:
-                self.boxplot()
+                self.mean_bars()
         with st.container():
             col3, col4 = st.columns(2)
             with col3:
@@ -33,6 +33,7 @@ class SubjectDashboard:
         st.markdown(f'# {self.subject}')
         wr(CONFIG['DESC'][self.subject])
 
+    # Deprecated
     def boxplot(self):
         behavior = st.selectbox('Behavior', CONFIG['DATASET']['macro_bhv'])
         chart = Boxplot(self.subject,
@@ -54,4 +55,15 @@ class SubjectDashboard:
         st.plotly_chart(chart.figure(),
                         use_container_width=True)
 
+    def mean_bars(self):
+        behavior = st.selectbox('Behavior', CONFIG['DATASET']['macro_bhv'])
+        scatter = st.checkbox('Individual points')
+        error_bar = st.checkbox('Error bar')
+        chart = MeanBars(self.subject,
+                        title=f'Time in {behavior}',
+                        behavior=behavior,
+                        error_bar=error_bar, 
+                        scatter=scatter,
+                        df=self.df)
+        st.plotly_chart(chart.figure(), use_container_width=True)
 
