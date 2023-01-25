@@ -30,8 +30,9 @@ class SubjectDashboard:
                 self.stacked_bars()
 
     def info(self):
-        st.markdown(f'# {self.subject}')
-        wr(CONFIG['DESC'][self.subject])
+        subject = 'All' if isinstance(self.subject, list) else self.subject
+        st.markdown(f'# {subject}')
+        wr(CONFIG['DESC'][subject])
 
     # Deprecated
     def boxplot(self):
@@ -43,14 +44,16 @@ class SubjectDashboard:
         st.plotly_chart(chart.figure(), use_container_width=True)
     
     def stacked_bars(self):
+        behaviors = st.multiselect("Behaviors: ", CONFIG['DATASET']['macro_bhv'])
         chart = StackedBars(self.subject,
-                          title='Behavior relative frequencies')
+                            behaviors,
+                            title='Behavior relative frequencies')
         st.plotly_chart(chart.figure(), use_container_width=True)
 
     def pie_chart(self):
         period = st.selectbox('Period',CONFIG['DATASET']['periods'])
         chart = PieChart(period,self.subject,
-                        title="Time spent on each behavior, by period",
+                        title="Total time spent on each behavior, by period",
                         df=self.df)
         st.plotly_chart(chart.figure(),
                         use_container_width=True)
@@ -60,7 +63,7 @@ class SubjectDashboard:
         scatter = st.checkbox('Individual points')
         error_bar = st.checkbox('Error bar')
         chart = MeanBars(self.subject,
-                        title=f'Time in {behavior}',
+                        title=f'Mean time in {behavior}',
                         behavior=behavior,
                         error_bar=error_bar, 
                         scatter=scatter,

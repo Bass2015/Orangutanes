@@ -67,7 +67,7 @@ class PieChart(Chart):
         mask = (self.df['subject'].isin(self.subject))&(self.df['period']==self.period)
         behavior_total_durations = self.df[mask] \
             .groupby('macro_bhv')['duration'] \
-            .mean() \
+            .sum() \
             .reset_index()
         self.fig = px.pie(behavior_total_durations,
                      values='duration', 
@@ -80,12 +80,14 @@ class PieChart(Chart):
         return self.fig
     
 class StackedBars(Chart):
-    def __init__(self, subject, title, df=None):
+    def __init__(self, subject, behaviors, title, df=None):
+        self.behaviors = behaviors
         df = pd.read_csv('./data/freqs_df.csv', index_col=[0])
         super().__init__(subject, title, df)
 
     def figure(self):
         self.load_data()
+        self.df = self.df[self.df['macro_bhv'].isin(self.behaviors)]
         self.fig = px.bar(self.df,
                      x='period',
                      y='relative_freq',
@@ -172,10 +174,13 @@ class MeanBars(Chart):
         
     def behavior_means_stds(self):
         return pd.DataFrame({
-            'means': [self.get_stat('mean', period ) 
-                      for period in self.df['period'].unique()],
-            'stds': [self.get_stat('std', period ) 
-                     for period in self.df['period'].unique()]})
+            'means': [self.get_stat('mean', 'pregame'),
+                      self.get_stat('mean', 'game'),
+                      self.get_stat('mean', 'postgame')],
+            'stds': [self.get_stat('std', 'pregame'),
+                      self.get_stat('std', 'game'),
+                      self.get_stat('std', 'postgame')]
+                      })
 
     def get_stat(self, stat, period):
         return self.df.query(f"period=='{period}'") \

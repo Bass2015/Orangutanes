@@ -13,7 +13,11 @@ wr = st.write
 
 def layout():
     with st.sidebar:
-        subject = st.radio('Select the subject to visualize', config['DATASET']['subjects'])
+        subject_list = config['DATASET']['subjects']
+        subject_list.append('All')
+        subject = st.radio('Select the subject to visualize', subject_list)
+        if subject == 'All':
+            subject = config['DATASET']['subjects']
     dashboard = SubjectDashboard(subject)
     dashboard.render()
 
