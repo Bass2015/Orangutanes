@@ -9,7 +9,10 @@ with open('./src/config.yaml', 'r') as f:
 
 class Chart:
     def __init__(self, subject, title, df=None):
-        self.subject = subject
+        if not isinstance(subject, list):
+            self.subject=[subject]
+        else: 
+            self.subject = subject
         self.df = df
         self.title = title
 
@@ -20,6 +23,13 @@ class Chart:
         periods = ['pregame', 'game', 'postgame']
         self.df['period'] = pd.Categorical(self.df['period'], categories=periods)
         self.df.sort_values(by='period', inplace=True)
+    
+    def unstack_behaviors(self):
+        self.df = self.df.groupby(['period', 'date','subject', 'reg','macro_bhv'])\
+                         ['duration'] \
+                         .sum() \
+                         .unstack(level='macro_bhv', fill_value=0) \
+                         .reset_index()
 
     def update_layout(self, title, lgd_title=None):
         self.fig.update_layout({'title': {
@@ -54,7 +64,7 @@ class PieChart(Chart):
         Chart.__init__(self, subject, title, df)
 
     def figure(self):
-        mask = (self.df['subject']==self.subject)&(self.df['period']==self.period)
+        mask = (self.df['subject'].isin(self.subject))&(self.df['period']==self.period)
         behavior_total_durations = self.df[mask] \
             .groupby('macro_bhv')['duration'] \
             .mean() \
@@ -72,7 +82,7 @@ class PieChart(Chart):
 class StackedBars(Chart):
     def __init__(self, subject, title, df=None):
         df = pd.read_csv('./data/freqs_df.csv', index_col=[0])
-        Chart.__init__(self, subject, title, df)
+        super().__init__(subject, title, df)
 
     def figure(self):
         self.load_data()
@@ -88,7 +98,7 @@ class StackedBars(Chart):
         return self.fig
 
     def load_data(self):
-        self.df = self.df[(self.df['subject']==self.subject)]\
+        self.df = self.df[(self.df['subject'].isin(self.subject))]\
                     .groupby(['period','macro_bhv'])['freq'] \
                     .sum() \
                     .reset_index()
@@ -107,28 +117,30 @@ class StackedBars(Chart):
 class Boxplot(Chart):
     def __init__(self, subject, title, behavior, df=None):
         self.behavior = behavior
-        Chart.__init__(self, subject, title, df)
+        super().__init__(subject, title, df)
         self.unstack_behaviors()
 
     def figure(self):
-        if not isinstance(self.subject, list):
-            subjects=[self.subject]
-        mask = (self.df['subject'].isin(subjects))
+        
+        mask = (self.df['subject'].isin(self.subject))
         df = self.df[mask]
         self.fig = px.box(df,
                           x='period',
                           y=self.behavior,
-                          color=self.behavior, 
                           category_orders={'period':['pregame', 'game', 'postgame']},
-                          color_discrete_map=CONFIG['COLORS']['behaviors'])
+                         )
         self.update_layout(self.title, lgd_title=None)
         self.fig.update_layout({'showlegend': False, 
                                 'yaxis': {'title': 'seconds'}})
         return self.fig
     
-    def unstack_behaviors(self):
-        self.df = self.df.groupby(['period', 'date','subject', 'reg','macro_bhv'])\
-                         ['duration'] \
-                         .sum() \
-                         .unstack(level='macro_bhv', fill_value=0) \
-                         .reset_index()
+    
+
+class MeanBars(Chart):
+    def __init__(self, subject, title, behavior, df=None):
+        self.behavior = behavior
+        super().__init__(subject, title, df)
+        self.unstack_behaviors()
+    
+    def figure(self):
+        pass
