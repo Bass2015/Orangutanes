@@ -2,12 +2,13 @@ import yaml
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
+from abc import ABC, abstractmethod
 
 with open('./src/config.yaml', 'r') as f:
     CONFIG = yaml.load(f, Loader=yaml.FullLoader)
 
 
-class Chart:
+class Chart(ABC):
     def __init__(self, subject, title, df=None):
         if not isinstance(subject, list):
             self.subject=[subject]
@@ -15,7 +16,9 @@ class Chart:
             self.subject = subject
         self.df = df
         self.title = title
+        super(Chart, self).__init__()
 
+    @abstractmethod
     def figure(self):
         return self.fig
 
@@ -61,7 +64,7 @@ class Chart:
 class PieChart(Chart):
     def __init__(self, period, subject, title, df=None):
         self.period=period
-        Chart.__init__(self, subject, title, df)
+        super(PieChart, self).__init__(subject, title, df)
 
     def figure(self):
         mask = (self.df['subject'].isin(self.subject))&(self.df['period']==self.period)
@@ -83,7 +86,7 @@ class StackedBars(Chart):
     def __init__(self, subject, behaviors, title, df=None):
         self.behaviors = behaviors
         df = pd.read_csv('./data/freqs_df.csv', index_col=[0])
-        super().__init__(subject, title, df)
+        super(StackedBars, self).__init__(subject, title, df)
 
     def figure(self):
         self.load_data()
@@ -119,7 +122,7 @@ class StackedBars(Chart):
 class Boxplot(Chart):
     def __init__(self, subject, title, behavior, df=None):
         self.behavior = behavior
-        super().__init__(subject, title, df)
+        super(Boxplot, self).__init__(subject, title, df)
         self.unstack_behaviors()
 
     def figure(self):
@@ -141,7 +144,7 @@ class MeanBars(Chart):
         self.behavior = behavior
         self.error_bar = error_bar
         self.scatter = scatter
-        super().__init__(subject, title, df)
+        super(MeanBars, self).__init__(subject, title, df)
         self.unstack_behaviors()
     
     def figure(self):

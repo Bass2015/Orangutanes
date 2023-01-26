@@ -3,7 +3,7 @@ import streamlit.components.v1 as components
 import pandas as pd
 import plotly.express as px
 import yaml
-from screens import SubjectDashboard
+from dashboard.screens import SubjectScreen
 
 with open('./src/config.yaml', 'r') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
@@ -18,7 +18,7 @@ def layout():
         subject = st.radio('Select the subject to visualize', subject_list)
         if subject == 'All':
             subject = config['DATASET']['subjects']
-    dashboard = SubjectDashboard(subject)
+    dashboard = SubjectScreen(subject)
     dashboard.render()
 
 if __name__ == '__main__':

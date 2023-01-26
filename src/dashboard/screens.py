@@ -1,19 +1,28 @@
 import pandas as pd
 import streamlit as st
-import plotly.express as px
 import yaml
-from charts import Boxplot, PieChart, StackedBars, MeanBars
+from dashboard.charts import Boxplot, PieChart, StackedBars, MeanBars
+from abc import ABC, abstractmethod
 
 wr = st.write
 with open('./src/config.yaml', 'r') as f:
     CONFIG = yaml.load(f, Loader=yaml.FullLoader)
 
-class SubjectDashboard:
+class Screen(ABC):
+    def __init__(self):
+        super(ABC, self).__init__()
+    
+    @abstractmethod
+    def render(self):
+        pass
+
+class SubjectScreen(Screen):
     def __init__(self, subject):
         self.subject = subject
         self.df = pd.read_csv('./data/clean_df.csv', index_col=[0])\
                         .groupby(['date', 'reg','subject','macro_bhv', 'period'])\
                         ['duration'].sum().reset_index()
+        super(SubjectScreen, self).__init__()
     
     def render(self):
         with st.container():
@@ -70,3 +79,9 @@ class SubjectDashboard:
                         df=self.df)
         st.plotly_chart(chart.figure(), use_container_width=True)
 
+class Methodology(Screen):
+    def __init__(self):
+        super(Methodology, self).__init__()
+
+    def render(self):
+        pass
