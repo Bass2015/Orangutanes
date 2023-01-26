@@ -7,8 +7,8 @@ import pandas as pd
 import numpy as np
 import datetime as dt
 
-xls = pd.ExcelFile(r'./Registro orangutanes Barcelona.xlsx')
-df_raw = pd.read_excel(xls,'Grupo')
+# xls = pd.ExcelFile(r'./Registro orangutanes Barcelona.xlsx')
+# df_raw = pd.read_excel(xls,'Grupo')
 
 DATE = 'date'
 SUBJECT = 'subject'
@@ -172,9 +172,16 @@ class GraphDF(DataManager):
         return graph
 
 
-xls = pd.ExcelFile(r'./Registro orangutanes Barcelona.xlsx')
-df_raw = pd.read_excel(xls,'Grupo')
-cleandf = CleanDF(df_raw)
-mldf = MLDF(cleandf.process_df())
-mldf.process_df()
-mldf.save_df('machine_learning.csv')
+def unstack_behaviors(df):
+    return df.groupby(['period', 'date','subject', 'reg','macro_bhv'])\
+                ['duration'] \
+                .sum() \
+                .unstack(level='macro_bhv', fill_value=0) \
+                .reset_index()
+
+# xls = pd.ExcelFile(r'./Registro orangutanes Barcelona.xlsx')
+# df_raw = pd.read_excel(xls,'Grupo')
+# cleandf = CleanDF(df_raw)
+# mldf = MLDF(cleandf.process_df())
+# mldf.process_df()
+# mldf.save_df('machine_learning.csv')

@@ -34,3 +34,5 @@ Negativas:
 
 Sexuales
 
+Estudio previo con gorilas:
+    https://www.zoobarcelona.cat/sites/default/files/2019-03/Proyecto%20Juego%20y%20Bienestar%20en%20Primates%20cautivos.pdf
