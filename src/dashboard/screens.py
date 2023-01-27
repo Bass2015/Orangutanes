@@ -6,6 +6,7 @@ import scipy.stats as stats
 from abc import ABC, abstractmethod
 from dashboard.charts import Boxplot, PieChart, StackedBars, MeanBars
 from data_manager import unstack_behaviors
+import statistics
 
 wr = st.write
 with open('./src/config.yaml', 'r') as f:
@@ -13,6 +14,9 @@ with open('./src/config.yaml', 'r') as f:
 
 class Screen(ABC):
     def __init__(self):
+        self.df = pd.read_csv('./data/clean_df.csv', index_col=[0])\
+                        .groupby(['date', 'reg','subject','macro_bhv', 'period'])\
+                        ['duration'].sum().reset_index()
         super(ABC, self).__init__()
     
     @abstractmethod
@@ -22,9 +26,6 @@ class Screen(ABC):
 class SubjectScreen(Screen):
     def __init__(self, subject):
         self.subject = subject
-        self.df = pd.read_csv('./data/clean_df.csv', index_col=[0])\
-                        .groupby(['date', 'reg','subject','macro_bhv', 'period'])\
-                        ['duration'].sum().reset_index()
         super(SubjectScreen, self).__init__()
     
     def render(self):
@@ -50,8 +51,8 @@ class SubjectScreen(Screen):
 
     def ttests(self, behavior):
         df = unstack_behaviors(self.df)
-        pregame_game_ttest = self.single_ttest(df, behavior, 'pregame', 'game')
-        pregame_postgame_ttest = self.single_ttest(df, behavior, 'pregame', 'postgame')
+        pregame_game_ttest = statistics.single_ttest(self.subject, df, behavior, 'pregame', 'game')
+        pregame_postgame_ttest = statistics.single_ttest(self.subject, df, behavior, 'pregame', 'postgame')
         
         st.markdown(f"""The difference between **pregame** period and **game** period, 
                 for {behavior} behaviors, {pregame_game_ttest[0]} significative, 
@@ -61,19 +62,6 @@ class SubjectScreen(Screen):
                 for {behavior} behaviors, {pregame_postgame_ttest[0]} significative, 
                 with a p-value of {pregame_postgame_ttest[1]:.3f} and a significance level
                 of 0.05""")
-        
-    def single_ttest(self, df, behavior, periodA, periodB):
-        """Returns ttest values to see if means of behavior between periodA and periodB are different"""
-        A_data = queries.filter_subject_period(df, self.subject, periodA) \
-                        .reset_index()[behavior]
-        B_data = queries.filter_subject_period(df, self.subject, periodB) \
-                        .reset_index()[behavior]
-        equal_var = stats.bartlett(A_data, B_data).pvalue > 0.05
-        ttest = stats.ttest_ind(A_data,B_data, equal_var=equal_var)
-
-        significative = ttest.pvalue < 0.05
-        signif_string = 'is' if significative else 'is not' 
-        return signif_string, ttest.pvalue
 
     # Deprecated
     def boxplot(self):
@@ -116,3 +104,18 @@ class Methodology(Screen):
 
     def render(self):
         pass
+
+class StatisticsScreen(Screen):
+    def __init__(self):
+        super(StatisticsScreen, self).__init__()
+    
+    def render(self):
+        st.markdown('## Individual tests for each behavior')
+        wr('Tables show p-values of t-test made between the observations of each subject')
+        st.markdown('### Comparison between pregame and game')
+        wr(self.individual_tests('pregame', 'game'))
+        st.markdown('### Comparison between pregame and postgame')
+        wr(self.individual_tests('pregame', 'postgame'))
+    
+    def individual_tests(self, periodA, periodB)->pd.DataFrame:
+        return statistics.ind_diff_between_periods(self.df, periodA, periodB)

@@ -172,7 +172,7 @@ class GraphDF(DataManager):
         return graph
 
 
-def unstack_behaviors(df):
+def unstack_behaviors(df) -> pd.DataFrame:
     return df.groupby(['period', 'date','subject', 'reg','macro_bhv'])\
                 ['duration'] \
                 .sum() \
