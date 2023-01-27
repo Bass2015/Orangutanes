@@ -36,3 +36,9 @@ Sexuales
 
 Estudio previo con gorilas:
     https://www.zoobarcelona.cat/sites/default/files/2019-03/Proyecto%20Juego%20y%20Bienestar%20en%20Primates%20cautivos.pdf
+
+Mixed models:
+    https://jbhender.github.io/Stats506/F18/GP/Group16.html
+    https://www.pythonfordatascience.org/mixed-effects-regression-python/
+    https://www.statsmodels.org/stable/mixed_linear.html
+    https://www.kaggle.com/code/ojwatson/mixed-models

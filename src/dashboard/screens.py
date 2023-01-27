@@ -51,6 +51,13 @@ class SubjectScreen(Screen):
 
     def ttests(self, behavior):
         df = unstack_behaviors(self.df)
+
+        if isinstance(self.subject, list):
+            self.grouped_ttest(df, behavior)
+        else:
+            self.individual_ttest(df, behavior)
+
+    def individual_ttest(self, df, behavior):
         pregame_game_ttest = statistics.single_ttest(self.subject, df, behavior, 'pregame', 'game')
         pregame_postgame_ttest = statistics.single_ttest(self.subject, df, behavior, 'pregame', 'postgame')
         
@@ -62,6 +69,9 @@ class SubjectScreen(Screen):
                 for {behavior} behaviors, {pregame_postgame_ttest[0]} significative, 
                 with a p-value of {pregame_postgame_ttest[1]:.3f} and a significance level
                 of 0.05""")
+
+    def grouped_ttest(self, df, behavior):
+        pass
 
     # Deprecated
     def boxplot(self):
