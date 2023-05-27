@@ -45,7 +45,7 @@ class SubjectScreen(Screen):
                 self.stacked_bars()
 
     def info(self):
-        subject = 'All' if isinstance(self.subject, list) else self.subject
+        subject = 'Group means' if isinstance(self.subject, list) else self.subject
         st.markdown(f'# {subject}')
         wr(CONFIG['DESC'][subject])
 
@@ -83,7 +83,7 @@ class SubjectScreen(Screen):
         st.plotly_chart(chart.figure(), use_container_width=True)
     
     def stacked_bars(self):
-        behaviors = st.multiselect("Behaviors: ", CONFIG['DATASET']['macro_bhv'])
+        behaviors = CONFIG['DATASET']['macro_bhv']
         chart = StackedBars(self.subject,
                             behaviors,
                             title='Behavior relative frequencies')

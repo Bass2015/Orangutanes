@@ -78,7 +78,8 @@ class PieChart(Chart):
                      color='macro_bhv', 
                      color_discrete_map=CONFIG['COLORS']['behaviors'])
         self.fig.update_traces(hoverinfo='label+percent',
-                textinfo='none')
+                textinfo='none', 
+                hovertemplate="Period: %{label} <br> Mean time: %{value} min")
         self.update_layout(title=self.title)
         return self.fig
     
@@ -99,7 +100,10 @@ class StackedBars(Chart):
                      category_orders={'period':['pregame', 'game', 'postgame']},
                      color_discrete_map=CONFIG['COLORS']['behaviors'])
         self.update_layout(self.title, lgd_title='Behavior')
-        self.fig.update_traces(marker_line_color='rgba(0,0,0,0)')
+        self.fig.update_traces(marker_line_color='rgba(0,0,0,0)', 
+                               hovertemplate="""Period: %{x} <br> 
+                                                Frequency: %{y:.2f}
+                                            """)
         return self.fig
 
     def load_data(self):
@@ -152,13 +156,15 @@ class MeanBars(Chart):
         statistics = self.behavior_means_stds()
         self.fig = px.bar(x=CONFIG['DATASET']['periods'],
                 y=statistics['means'])
+
         self.beautify(statistics)
         return self.fig
 
     def beautify(self, statistics):
         self.update_layout(self.title, lgd_title=None)
         self.fig.update_traces(marker_color=CONFIG['COLORS']['behaviors'][self.behavior],
-                               marker_line_color='rgba(0,0,0,0)')
+                               marker_line_color='rgba(0,0,0,0)', 
+                               hovertemplate="Period: %{x} <br> Mean time: %{y:.2f} min")
         self.plot_points_and_error(statistics)
 
     def plot_points_and_error(self, statistics):
@@ -172,7 +178,9 @@ class MeanBars(Chart):
                             x=self.df.period, 
                             y=self.df[self.behavior], 
                             mode='markers',
-                            marker={'color':color})
+                            marker={'color':color}, 
+                            name='', 
+                            hovertemplate="Ind. point: %{y:.2f}")
                          )
         
     def behavior_means_stds(self):
