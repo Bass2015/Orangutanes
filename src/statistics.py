@@ -10,13 +10,16 @@ def ind_diff_between_periods(df, periodA, periodB) -> pd.DataFrame:
     results = {}
     for sub in unstacked.subject.unique():
         for bhv in df['macro_bhv'].unique():
-            test = single_ttest(sub, unstacked, bhv, periodA, periodB)[1]
+            try:
+                test = single_ttest(sub, unstacked, bhv, periodA, periodB)[1]
+            except:
+                test = None
             results[bhv] = results.get(bhv, [])
             results[bhv].append(test)
     return pd.DataFrame(results, index=unstacked.subject.unique())
     
     
-          
+import streamlit as st      
 def single_ttest(subject, df, behavior, periodA, periodB):
     """Returns ttest p- values to see if means of behavior between periodA 
     and periodB are different"""
@@ -24,6 +27,8 @@ def single_ttest(subject, df, behavior, periodA, periodB):
                     .reset_index()[behavior]
     B_data = queries.filter_subject_period(df, subject, periodB) \
                     .reset_index()[behavior]
+    if A_data.sum()== 0 or B_data.sum() == 0:
+        raise ValueError("Not enough data")
     if len(A_data) < 30:
         pd.concat([A_data, pd.Series(0, index=[30])])
     if len(B_data) < 30:

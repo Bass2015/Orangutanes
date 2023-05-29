@@ -58,17 +58,22 @@ class SubjectScreen(Screen):
             self.individual_ttest(df, behavior)
 
     def individual_ttest(self, df, behavior):
-        pregame_game_ttest = statistics.single_ttest(self.subject, df, behavior, 'pregame', 'game')
-        pregame_postgame_ttest = statistics.single_ttest(self.subject, df, behavior, 'pregame', 'postgame')
-        
-        st.markdown(f"""The difference between **pregame** period and **game** period, 
+        try: 
+            pregame_game_ttest = statistics.single_ttest(self.subject, df, behavior, 'pregame', 'game')
+            st.markdown(f"""The difference between **pregame** period and **game** period, 
                 for {behavior} behaviors, {pregame_game_ttest[0]} significative, 
                 with a p-value of {pregame_game_ttest[1]:.3f} and a significance level
                 of 0.05""")
-        st.markdown(f"""The difference between **pregame** period and **postgame** period, 
+        except:
+            st.markdown("There's not enough data to perform a T test")
+        try:
+            pregame_postgame_ttest = statistics.single_ttest(self.subject, df, behavior, 'pregame', 'postgame')
+            st.markdown(f"""The difference between **pregame** period and **postgame** period, 
                 for {behavior} behaviors, {pregame_postgame_ttest[0]} significative, 
                 with a p-value of {pregame_postgame_ttest[1]:.3f} and a significance level
                 of 0.05""")
+        except:
+            st.markdown("There's not enough data to perform a T test")  
 
     def grouped_ttest(self, df, behavior):
         pass
