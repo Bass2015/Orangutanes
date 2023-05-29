@@ -79,7 +79,7 @@ class PieChart(Chart):
                      color_discrete_map=CONFIG['COLORS']['behaviors'])
         self.fig.update_traces(hoverinfo='label+percent',
                 textinfo='none', 
-                hovertemplate="Period: %{label} <br> Mean time: %{value} min")
+                hovertemplate="Period: %{label} <br> Mean time: %{percent}")
         self.update_layout(title=self.title)
         return self.fig
     
@@ -155,7 +155,7 @@ class MeanBars(Chart):
         self.df = self.df[self.df['subject'].isin(self.subject)]
         statistics = self.behavior_means_stds()
         self.fig = px.bar(x=CONFIG['DATASET']['periods'],
-                y=statistics['means'])
+                y=statistics['means']/60)
 
         self.beautify(statistics)
         return self.fig
