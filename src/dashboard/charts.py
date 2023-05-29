@@ -79,7 +79,7 @@ class PieChart(Chart):
                      color_discrete_map=CONFIG['COLORS']['behaviors'])
         self.fig.update_traces(hoverinfo='label+percent',
                 textinfo='none', 
-                hovertemplate="Period: %{label} <br> Mean time: %{percent}")
+                hovertemplate="Behavior: %{label} <br> Mean time: %{percent}")
         self.update_layout(title=self.title)
         return self.fig
     
