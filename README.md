@@ -39,6 +39,6 @@ Estudio previo con gorilas:
 
 Mixed models:
     https://jbhender.github.io/Stats506/F18/GP/Group16.html
-    https://www.pythonfordatascience.org/mixed-effects-regression-python/
+    https://www.pythonfordatascience.or qg/mixed-effects-regression-python/
     https://www.statsmodels.org/stable/mixed_linear.html
     https://www.kaggle.com/code/ojwatson/mixed-models

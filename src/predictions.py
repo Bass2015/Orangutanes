@@ -3,9 +3,9 @@ import constants
 import pandas as pd
 import numpy as np
 import json
-import torch
-import torch.nn as nn
-from torch.utils.data import DataLoader
+# import torch
+# import torch.nn as nn
+# from torch.utils.data import DataLoader
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
@@ -15,18 +15,18 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 results = {'periods': {},
            'subjects': {}}
 
-class NeuralNetwork(nn.Module):
-    def __init__(self, input_shape, output_shape):
-        super(NeuralNetwork, self).__init__()
-        self.net = nn.Sequential(nn.Linear(input_shape, 20),
-                                 nn.ReLU(),
-                                 nn.Linear(20, 10),
-                                 nn.ReLU(),
-                                 nn.Linear(10, output_shape),
-                                 nn.Softmax())
+# class NeuralNetwork(nn.Module):
+#     def __init__(self, input_shape, output_shape):
+#         super(NeuralNetwork, self).__init__()
+#         self.net = nn.Sequential(nn.Linear(input_shape, 20),
+#                                  nn.ReLU(),
+#                                  nn.Linear(20, 10),
+#                                  nn.ReLU(),
+#                                  nn.Linear(10, output_shape),
+#                                  nn.Softmax())
     
-    def forward(self, x):
-        return self.net.forward(x)
+#     def forward(self, x):
+#         return self.net.forward(x)
 
 def decission_tree(study, train_test):
     X_train, X_test, y_train, y_test = train_test
@@ -60,7 +60,7 @@ def svm(study, train_test):
     Y_pred = final_model.predict(X_test)
     results[study][constants.SVM][constants.CM] = confusion_matrix(Y_test.values.argmax(axis=1), Y_pred).tolist()
 
-def neural_network(study, train_test):
+# def neural_network(study, train_test):
     X_train, X_test, y_train, y_test = train_test
     print(y_train.columns)
     model = NeuralNetwork(X_train.shape[1], y_train.shape[1])
@@ -104,6 +104,6 @@ if __name__ == '__main__':
     random_forest('subjects', train_test_subjects)
     svm('periods', train_test_periods)
     svm('subjects', train_test_subjects)
-    neural_network('periods', train_test_periods)
-    neural_network('subjects', train_test_subjects)
+    # neural_network('periods', train_test_periods)
+    # neural_network('subjects', train_test_subjects)
     save_results()
